@@ -1,0 +1,71 @@
+import 'package:flutter/material.dart';
+
+void main() => runApp(IdadeApp());
+
+class IdadeApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Idade nos Próximos 50 Anos',
+      home: IdadeScreen(),
+    );
+  }
+}
+
+class IdadeScreen extends StatefulWidget {
+  @override
+  _IdadeScreenState createState() => _IdadeScreenState();
+}
+
+class _IdadeScreenState extends State<IdadeScreen> {
+  final TextEditingController _anoController = TextEditingController();
+  List<int>? idades;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Idade nos Próximos 50 Anos'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _anoController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Ano de Nascimento'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  int anoNascimento = int.parse(_anoController.text);
+                  int anoAtual = DateTime.now().year;
+                  idades = List.generate(
+                    50,
+                    (index) => (anoAtual + index + 1) - anoNascimento,
+                  );
+                });
+              },
+              child: Text('Calcular Idades'),
+            ),
+            SizedBox(height: 20),
+            if (idades != null)
+              Expanded(
+                child: ListView.builder(
+                  itemCount: idades!.length,
+                  itemBuilder: (context, index) {
+                    int anoFuturo = DateTime.now().year + index + 1;
+                    return ListTile(
+                      title: Text(
+                          'Ano $anoFuturo: ${idades![index]} anos'),
+                    );
+                  },
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}

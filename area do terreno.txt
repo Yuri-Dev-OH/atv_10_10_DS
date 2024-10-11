@@ -1,0 +1,63 @@
+import 'package:flutter/material.dart';
+
+void main() => runApp(AreaApp());
+
+class AreaApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Área do Terreno',
+      home: AreaScreen(),
+    );
+  }
+}
+
+class AreaScreen extends StatefulWidget {
+  @override
+  _AreaScreenState createState() => _AreaScreenState();
+}
+
+class _AreaScreenState extends State<AreaScreen> {
+  final TextEditingController _larguraController = TextEditingController();
+  final TextEditingController _profundidadeController = TextEditingController();
+  double? area;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Cálculo de Área do Terreno'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _larguraController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Largura (m)'),
+            ),
+            TextField(
+              controller: _profundidadeController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Profundidade (m)'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  double largura = double.parse(_larguraController.text);
+                  double profundidade =
+                      double.parse(_profundidadeController.text);
+                  area = largura * profundidade;
+                });
+              },
+              child: Text('Calcular Área'),
+            ),
+            SizedBox(height: 20),
+            if (area != null) Text('Área do terreno: $area m²'),
+          ],
+        ),
+      ),
+    );
+  }
+}

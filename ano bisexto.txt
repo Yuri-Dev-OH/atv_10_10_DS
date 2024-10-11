@@ -1,0 +1,61 @@
+import 'package:flutter/material.dart';
+
+void main() => runApp(BissextoApp());
+
+class BissextoApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Ano Bissexto',
+      home: BissextoScreen(),
+    );
+  }
+}
+
+class BissextoScreen extends StatefulWidget {
+  @override
+  _BissextoScreenState createState() => _BissextoScreenState();
+}
+
+class _BissextoScreenState extends State<BissextoScreen> {
+  final TextEditingController _controller = TextEditingController();
+  String? resultado;
+
+  bool isBissexto(int ano) {
+    return (ano % 4 == 0 && ano % 100 != 0) || (ano % 400 == 0);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Ano Bissexto'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _controller,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Digite um ano'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  int ano = int.parse(_controller.text);
+                  resultado = isBissexto(ano)
+                      ? 'O ano $ano é bissexto'
+                      : 'O ano $ano não é bissexto';
+                });
+              },
+              child: Text('Verificar'),
+            ),
+            SizedBox(height: 20),
+            if (resultado != null) Text(resultado!),
+          ],
+        ),
+      ),
+    );
+  }
+}

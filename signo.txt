@@ -1,0 +1,78 @@
+import 'package:flutter/material.dart';
+
+void main() => runApp(SignoApp());
+
+class SignoApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Signo',
+      home: SignoScreen(),
+    );
+  }
+}
+
+class SignoScreen extends StatefulWidget {
+  @override
+  _SignoScreenState createState() => _SignoScreenState();
+}
+
+class _SignoScreenState extends State<SignoScreen> {
+  final TextEditingController _diaController = TextEditingController();
+  final TextEditingController _mesController = TextEditingController();
+  String? signo;
+
+  String getSigno(int dia, int mes) {
+    if ((mes == 1 && dia >= 20) || (mes == 2 && dia <= 18)) return 'Aquário';
+    if ((mes == 2 && dia >= 19) || (mes == 3 && dia <= 20)) return 'Peixes';
+    if ((mes == 3 && dia >= 21) || (mes == 4 && dia <= 19)) return 'Áries';
+    if ((mes == 4 && dia >= 20) || (mes == 5 && dia <= 20)) return 'Touro';
+    if ((mes == 5 && dia >= 21) || (mes == 6 && dia <= 20)) return 'Gêmeos';
+    if ((mes == 6 && dia >= 21) || (mes == 7 && dia <= 22)) return 'Câncer';
+    if ((mes == 7 && dia >= 23) || (mes == 8 && dia <= 22)) return 'Leão';
+    if ((mes == 8 && dia >= 23) || (mes == 9 && dia <= 22)) return 'Virgem';
+    if ((mes == 9 && dia >= 23) || (mes == 10 && dia <= 22)) return 'Libra';
+    if ((mes == 10 && dia >= 23) || (mes == 11 && dia <= 21)) return 'Escorpião';
+    if ((mes == 11 && dia >= 22) || (mes == 12 && dia <= 21)) return 'Sagitário';
+    if ((mes == 12 && dia >= 22) || (mes == 1 && dia <= 19)) return 'Capricórnio';
+    return 'Data inválida';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Signo'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _diaController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Dia de Nascimento'),
+            ),
+            TextField(
+              controller: _mesController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Mês de Nascimento'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  int dia = int.parse(_diaController.text);
+                  int mes = int.parse(_mesController.text);
+                  signo = getSigno(dia, mes);
+                });
+              },
+              child: Text('Verificar Signo'),
+            ),
+            SizedBox(height: 20),
+            if (signo != null) Text('Seu signo é: $signo'),
+          ],
+        ),
+      ),
+    );
+  }
+}

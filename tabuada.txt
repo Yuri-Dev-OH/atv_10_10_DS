@@ -1,0 +1,65 @@
+import 'package:flutter/material.dart';
+
+void main() => runApp(TabuadaApp());
+
+class TabuadaApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Tabuada',
+      home: TabuadaScreen(),
+    );
+  }
+}
+
+class TabuadaScreen extends StatefulWidget {
+  @override
+  _TabuadaScreenState createState() => _TabuadaScreenState();
+}
+
+class _TabuadaScreenState extends State<TabuadaScreen> {
+  final TextEditingController _controller = TextEditingController();
+  int? numero;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Tabuada'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _controller,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Digite um número'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  numero = int.tryParse(_controller.text);
+                });
+              },
+              child: Text('Mostrar Tabuada'),
+            ),
+            SizedBox(height: 20),
+            if (numero != null)
+              Expanded(
+                child: ListView.builder(
+                  itemCount: 10,
+                  itemBuilder: (context, index) {
+                    int resultado = numero! * (index + 1);
+                    return ListTile(
+                      title: Text('$numero x ${index + 1} = $resultado'),
+                    );
+                  },
+                ),
+              )
+          ],
+        ),
+      ),
+    );
+  }
+}
