@@ -1,0 +1,267 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class CalcSalarioRec {
+  late double salario;
+  late double faltas;
+  late double descontoFalta;
+  late double salarioFinal;
+
+  void setSalario(double v) {
+    salario = v;
+  }
+
+  void setFaltas(double v) {
+    faltas = v;
+  }
+
+  void setDescontoFalta(double v) {
+    descontoFalta = v;
+  }
+
+  void calcularSalarioFinal() {
+    salarioFinal = salario - (faltas * descontoFalta);
+  }
+
+  double getSalarioFinal() {
+    return salarioFinal;
+  }
+
+  double getDescontoFalta() {
+    return descontoFalta;
+  }
+
+  double calcularDescontoTotal() {
+    return faltas * descontoFalta;
+  }
+}
+
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final TextEditingController salarioController = TextEditingController();
+  final TextEditingController faltasController = TextEditingController();
+  final TextEditingController descontoFaltaController = TextEditingController();
+
+  double salarioFinal = 0.0;
+  double descontoFalta = 0.0;
+  double descontoTotal = 0.0;
+  String mensagem = ''; // Mensagem de erro
+
+  final calcSalario = CalcSalarioRec();
+
+  void calcularSalario() {
+    final salario = double.tryParse(salarioController.text);
+    final faltas = double.tryParse(faltasController.text);
+    final descontoFalta = double.tryParse(descontoFaltaController.text);
+
+    // Verifica se os valores são válidos
+    if (salario != null && faltas != null && descontoFalta != null) {
+      calcSalario.setSalario(salario);
+      calcSalario.setFaltas(faltas);
+      calcSalario.setDescontoFalta(descontoFalta);
+
+      calcSalario.calcularSalarioFinal();
+      descontoTotal = calcSalario.calcularDescontoTotal();
+
+      // Verifica se o desconto total é maior ou igual ao salário
+      if (descontoTotal >= salario) {
+        setState(() {
+          mensagem = 'Atenção! O desconto total é maior ou igual ao seu salário.';
+        });
+      } else {
+        setState(() {
+          mensagem = ''; // Limpa a mensagem se o cálculo for válido
+        });
+      }
+
+      setState(() {
+        salarioFinal = calcSalario.getSalarioFinal();
+        this.descontoFalta = calcSalario.getDescontoFalta();
+      });
+    } else {
+      setState(() {
+        mensagem = 'Por favor, preencha todos os campos corretamente.';
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.blue,
+          title: Text(
+            'Cálculo de Salário com Faltas',
+            style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Roboto', fontSize: 20),
+          ),
+          centerTitle: true,
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                // Espaço para a imagem do GitHub
+                Container(
+                  margin: EdgeInsets.only(bottom: 20),
+                  child: Column(
+                    children: [
+                      // Imagem no topo
+                      Image.network(
+                        'https://raw.githubusercontent.com/Yuri-Dev-OH/Dartpad.dev/refs/heads/main/carteira-de-trabalho.png', // Coloque a URL da sua imagem aqui
+                        width: 120,
+                        height: 120,
+                      ),
+                      SizedBox(height: 12),
+                      Text(
+                        'Cálculo de Salário',
+                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black, fontFamily: 'Roboto'),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Insira as informações abaixo para calcular o salário após descontos.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600], fontFamily: 'Roboto'),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Campo de texto para o salário
+                _buildTextField(
+                  controller: salarioController,
+                  label: 'Salário',
+                  hint: 'Informe o salário',
+                  keyboardType: TextInputType.number,
+                ),
+
+                SizedBox(height: 16),
+
+                // Campo de texto para o número de faltas
+                _buildTextField(
+                  controller: faltasController,
+                  label: 'Número de Faltas',
+                  hint: 'Informe o número de faltas',
+                  keyboardType: TextInputType.number,
+                ),
+
+                SizedBox(height: 16),
+
+                // Campo de texto para o desconto da falta
+                _buildTextField(
+                  controller: descontoFaltaController,
+                  label: 'Desconto por Falta',
+                  hint: 'Informe o valor do desconto por falta',
+                  keyboardType: TextInputType.number,
+                ),
+
+                SizedBox(height: 20),
+
+                // Botão de cálculo
+                ElevatedButton(
+                  onPressed: calcularSalario,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 40),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                  ),
+                  child: Text(
+                    'Calcular',
+                    style: TextStyle(fontSize: 18, color: Colors.white, fontFamily: 'Roboto'),
+                  ),
+                ),
+
+                SizedBox(height: 20),
+
+                // Exibindo o resultado
+                if (salarioFinal > 0) _buildResultSection(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Função para criar campos de entrada com estilização
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required TextInputType keyboardType,
+  }) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: TextField(
+        controller: controller,
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
+          labelText: label,
+          hintText: hint,
+          labelStyle: TextStyle(color: Colors.blue, fontFamily: 'Roboto'),
+          hintStyle: TextStyle(color: Colors.grey[600], fontFamily: 'Roboto'),
+          border: InputBorder.none,
+          contentPadding: EdgeInsets.symmetric(vertical: 15),
+        ),
+        style: TextStyle(fontSize: 16, fontFamily: 'Roboto'),
+      ),
+    );
+  }
+
+  // Função para exibir os resultados
+  Widget _buildResultSection() {
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.blue[50],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          Text(
+            'Resultados',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
+          ),
+          SizedBox(height: 15),
+          Text(
+            'Desconto por Falta: R\$${descontoFalta.toStringAsFixed(2)}',
+            style: TextStyle(fontSize: 18, color: Colors.black),
+          ),
+          SizedBox(height: 10),
+          Text(
+            'Desconto Total: R\$${descontoTotal.toStringAsFixed(2)}',
+            style: TextStyle(fontSize: 18, color: Colors.red, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 10),
+          Text(
+            'Salário Final: R\$${salarioFinal.toStringAsFixed(2)}',
+            style: TextStyle(fontSize: 18, color: Colors.green, fontWeight: FontWeight.bold),
+          ),
+          if (mensagem.isNotEmpty) // Exibe a mensagem de erro somente se houver
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Text(
+                mensagem,
+                style: TextStyle(fontSize: 16, color: Colors.red, fontWeight: FontWeight.bold),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
